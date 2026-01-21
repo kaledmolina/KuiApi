@@ -30,21 +30,21 @@
                 <div class="flex items-center">
                     <span class="text-2xl font-bold text-amber-600 dark:text-amber-500">Kui</span>
                 </div>
-                @if (Route::has('login'))
-                    <div class="flex space-x-4">
-                        @auth
-                            <a href="{{ url('/dashboard') }}"
-                                class="font-medium hover:text-amber-600 dark:hover:text-amber-400">Dashboard</a>
-                        @else
-                            <a href="{{ route('login') }}"
-                                class="font-medium hover:text-amber-600 dark:hover:text-amber-400">Log in</a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}"
-                                    class="font-medium hover:text-amber-600 dark:hover:text-amber-400">Register</a>
-                            @endif
-                        @endauth
-                    </div>
-                @endif
+                {{-- @if (Route::has('login')) --}}
+                <div class="flex space-x-4">
+                    @auth
+                        <a href="{{ url('/dashboard') }}"
+                            class="font-medium hover:text-amber-600 dark:hover:text-amber-400">Dashboard</a>
+                    @else
+                        <a href="{{ url('/admin/login') }}"
+                            class="font-medium hover:text-amber-600 dark:hover:text-amber-400">Log in</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}"
+                                class="font-medium hover:text-amber-600 dark:hover:text-amber-400">Register</a>
+                        @endif
+                    @endauth
+                </div>
+                {{-- @endif --}}
             </nav>
         </header>
 
@@ -69,7 +69,7 @@
                                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                     </a>
-                    <a href="{{ route('login') }}"
+                    <a href="{{ url('/admin/login') }}"
                         class="inline-flex items-center justify-center px-8 py-3 border border-gray-300 dark:border-gray-700 text-base font-medium rounded-full text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 md:py-4 md:text-lg transition duration-150 ease-in-out shadow-sm hover:shadow-md">
                         Comenzar en Web
                     </a>
