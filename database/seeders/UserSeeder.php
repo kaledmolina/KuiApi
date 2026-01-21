@@ -26,6 +26,10 @@ class UserSeeder extends Seeder
             'password' => 'password',
             'is_admin' => false,
             'is_active' => true,
+            'xp_total' => 0,
+            'lives' => 5,
+            'streak_count' => 0,
+            'gold_notes' => 0,
         ]);
     }
 }
