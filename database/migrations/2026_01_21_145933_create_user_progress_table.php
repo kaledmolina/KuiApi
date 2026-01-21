@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('level_id')->constrained('levels')->onDelete('cascade');
             $table->integer('stars')->default(0);
-            $table->integer('score')->default(0);
-            $table->timestamp('completed_at')->nullable();
+            $table->integer('score')->default(0); // Optional but good to have
+            $table->boolean('is_completed')->default(false);
             $table->timestamps();
         });
     }

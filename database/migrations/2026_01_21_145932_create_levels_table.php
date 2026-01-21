@@ -13,10 +13,8 @@ return new class extends Migration {
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('world_id');
-            $table->string('difficulty')->nullable();
-            $table->json('notes_included')->nullable();
-            $table->json('config')->nullable();
+            $table->integer('difficulty')->default(1);
+            $table->json('config')->nullable(); // Contains notes: ["C4", "D4"]
             $table->timestamps();
         });
     }

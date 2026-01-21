@@ -14,11 +14,13 @@ class UserProgress extends Model
         'level_id',
         'stars',
         'score',
+        'is_completed',
         'completed_at',
     ];
 
     protected $casts = [
         'completed_at' => 'datetime',
+        'is_completed' => 'boolean',
     ];
 
     public function user()

@@ -11,15 +11,13 @@ class Level extends Model
 
     protected $fillable = [
         'name',
-        'world_id',
         'difficulty',
-        'notes_included',
         'config',
     ];
 
     protected $casts = [
-        'notes_included' => 'array',
         'config' => 'array',
+        'difficulty' => 'integer',
     ];
 
     public function userProgress()
