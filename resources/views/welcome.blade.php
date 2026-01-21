@@ -53,7 +53,7 @@
             <div class="text-center max-w-3xl mx-auto">
                 <h1
                     class="text-5xl sm:text-6xl font-black tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-orange-600">
-                    Aprende Kichwa Jugando
+                    Aprende notas de música con Kui
                 </h1>
                 <p class="text-xl sm:text-2xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
                     Conecta con tus raíces. Kui te ayuda a aprender Kichwa de una manera divertida, interactiva y
