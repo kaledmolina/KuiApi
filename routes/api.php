@@ -18,5 +18,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/curriculum', [LessonController::class, 'curriculum']);
     Route::get('/levels/{id}', [LessonController::class, 'show']);
+    Route::get('/levels/{id}', [LessonController::class, 'show']);
     Route::post('/lesson/complete', [LessonController::class, 'complete']);
+    Route::post('/user/progress', [LessonController::class, 'updateProgress']);
 });

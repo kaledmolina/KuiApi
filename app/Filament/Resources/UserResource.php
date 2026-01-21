@@ -60,6 +60,9 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('xp_total')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('lives')->numeric()->sortable(),
+                Tables\Columns\TextColumn::make('gold_notes')->numeric()->sortable(),
+                Tables\Columns\TextColumn::make('streak_count')->numeric()->sortable(),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Active'),
                 Tables\Columns\TextColumn::make('created_at')

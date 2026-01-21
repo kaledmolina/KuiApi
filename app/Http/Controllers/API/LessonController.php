@@ -68,4 +68,25 @@ class LessonController extends Controller
             ]
         ]);
     }
+    public function updateProgress(Request $request)
+    {
+        $request->validate([
+            'lives' => 'required|integer',
+            'gold_notes' => 'required|integer',
+            'streak_count' => 'required|integer',
+            'xp_total' => 'required|integer',
+        ]);
+
+        $user = $request->user();
+
+        $user->update([
+            'lives' => $request->lives,
+            'gold_notes' => $request->gold_notes,
+            'streak_count' => $request->streak_count,
+            'xp_total' => $request->xp_total,
+            'last_activity_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Progress updated', 'user' => $user]);
+    }
 }
