@@ -44,6 +44,18 @@ class UserResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->required(),
+                Forms\Components\TextInput::make('xp_total')
+                    ->numeric()
+                    ->default(0)
+                    ->required(),
+                Forms\Components\TextInput::make('streak_count')
+                    ->numeric()
+                    ->default(0)
+                    ->required(),
+                Forms\Components\TextInput::make('max_unlocked_level')
+                    ->numeric()
+                    ->default(1)
+                    ->required(),
                 Forms\Components\Toggle::make('is_admin')
                     ->label('Admin Access'),
             ]);
@@ -63,6 +75,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('lives')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('gold_notes')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('streak_count')->numeric()->sortable(),
+                Tables\Columns\TextColumn::make('max_unlocked_level')->numeric()->sortable()->label('Max Level'),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('Active'),
                 Tables\Columns\TextColumn::make('created_at')
