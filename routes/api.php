@@ -22,4 +22,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/lesson/complete', [LessonController::class, 'complete']);
     Route::post('/user/progress', [LessonController::class, 'updateProgress']); // Keep existing if needed
     Route::post('/user/stats', [\App\Http\Controllers\API\ProgressController::class, 'updateStats']);
+    Route::post('/training/complete', [\App\Http\Controllers\API\TrainingController::class, 'complete']);
 });
