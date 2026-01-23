@@ -32,6 +32,7 @@ class User extends Authenticatable implements FilamentUser
         'last_activity_at',
         'gold_notes',
         'max_unlocked_level',
+        'league',
         'is_admin',
     ];
 

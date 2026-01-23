@@ -53,6 +53,27 @@ class ProgressController extends Controller
             // User model has 'xp_total'. Let's assume we pass the delta to add.
             // Wait, front-end might send total. Let's assume 'xp' param is added to total.
             $user->xp_total += $request->xp;
+
+            // League Calculation Logic
+            $xp = $user->xp_total;
+            $league = 'Beginner'; // Default
+
+            if ($xp >= 20000) {
+                $league = 'Master';
+            } elseif ($xp >= 10000) {
+                $league = 'Ultra';
+            } elseif ($xp >= 5000) {
+                $league = 'Veteran';
+            } elseif ($xp >= 2500) {
+                $league = 'Expert';
+            } elseif ($xp >= 1000) {
+                $league = 'Great';
+            }
+
+            // Update league if it has changed
+            if ($user->league !== $league) {
+                $user->league = $league;
+            }
         }
 
         if ($request->has('gold_notes')) {

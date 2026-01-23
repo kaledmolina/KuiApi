@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\LessonController;
+use App\Http\Controllers\API\RankingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,4 +24,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/user/progress', [LessonController::class, 'updateProgress']); // Keep existing if needed
     Route::post('/user/stats', [\App\Http\Controllers\API\ProgressController::class, 'updateStats']);
     Route::post('/training/complete', [\App\Http\Controllers\API\TrainingController::class, 'complete']);
+    Route::get('/rankings', [RankingController::class, 'index']); // Added this line
 });
