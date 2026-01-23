@@ -23,9 +23,28 @@ class ProgressController extends Controller
             $user->lives = $request->lives;
         }
 
-        if ($request->has('streak_count')) {
-            $user->streak_count = $request->streak_count;
+        // Daily Streak Logic (Server-Side)
+        $now = now();
+        $lastActivity = $user->last_activity_at;
+
+        if ($lastActivity) {
+            // Check if last activity was yesterday (continued streak)
+            // referencing Carbon instance
+            if ($lastActivity->isYesterday()) {
+                $user->streak_count++;
+            }
+            // Check if last activity was BEFORE yesterday (broken streak)
+            // If it's not today and not yesterday, it must be older.
+            elseif (!$lastActivity->isToday()) {
+                $user->streak_count = 1;
+            }
+            // If isToday(), streak remains same.
+        } else {
+            // First time activity
+            $user->streak_count = 1;
         }
+
+        $user->last_activity_at = $now;
 
         if ($request->has('xp')) {
             // XP usually accumulates, but if we pass total, update total
@@ -38,6 +57,12 @@ class ProgressController extends Controller
 
         if ($request->has('gold_notes')) {
             $user->gold_notes += $request->gold_notes;
+        }
+
+        if ($request->has('max_unlocked_level')) {
+            if ($request->max_unlocked_level > $user->max_unlocked_level) {
+                $user->max_unlocked_level = $request->max_unlocked_level;
+            }
         }
 
         $user->save();

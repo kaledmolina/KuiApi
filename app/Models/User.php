@@ -31,6 +31,7 @@ class User extends Authenticatable implements FilamentUser
         'streak_count',
         'last_activity_at',
         'gold_notes',
+        'max_unlocked_level',
         'is_admin',
     ];
 
