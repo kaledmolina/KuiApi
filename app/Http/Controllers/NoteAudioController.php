@@ -8,9 +8,27 @@ use Illuminate\Support\Facades\Storage;
 
 class NoteAudioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(NoteAudio::all());
+        $query = NoteAudio::query();
+
+        if ($request->has('octave')) {
+            $query->where('octave', $request->octave);
+        }
+
+        if ($request->has('note_name')) {
+            $notes = $request->input('note_name');
+            if (is_string($notes) && str_contains($notes, ',')) {
+                $notes = explode(',', $notes);
+            }
+            if (is_array($notes)) {
+                $query->whereIn('note_name', $notes);
+            } else {
+                $query->where('note_name', $notes);
+            }
+        }
+
+        return response()->json($query->get());
     }
 
     public function generator()
