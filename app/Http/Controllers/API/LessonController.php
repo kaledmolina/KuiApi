@@ -55,8 +55,9 @@ class LessonController extends Controller
         $user->increment('xp_total', $xpGained);
         $user->increment('gold_notes', $goldGained);
 
-        // Update last activity for streak logic could go here
-        $user->update(['last_activity_at' => now()]);
+        // 4. Streak Update via Gamification Service
+        $gamificationService = new \App\Services\GamificationService(); // Or inject via constructor
+        $gamificationService->maintainStreak($user);
 
         return response()->json([
             'message' => 'Lección completada',
