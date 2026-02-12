@@ -23,7 +23,17 @@ class LevelResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('difficulty')
+                    ->required()
+                    ->numeric()
+                    ->default(1),
+                Forms\Components\TagsInput::make('config')
+                    ->required()
+                    ->separator(',')
+                    ->helperText('Enter notes separated by comma (e.g., C4, D4, E4)'),
             ]);
     }
 
