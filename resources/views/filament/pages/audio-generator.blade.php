@@ -9,7 +9,8 @@
 
         <div class="mb-6">
             <h2 class="text-xl font-bold mb-2">Generate Notes (A0 - C8)</h2>
-            <x-filament::button id="generate-all" type="button" disabled color="success">Generate & Upload All (88 Keys)</x-filament::button>
+            <x-filament::button id="generate-all" type="button" color="success">Generate & Upload All (88
+                Keys)</x-filament::button>
         </div>
 
         <div class="mb-6">
@@ -19,7 +20,8 @@
             </div>
         </div>
 
-        <div id="log" class="bg-gray-900 text-green-400 p-4 rounded h-64 overflow-y-auto font-mono text-sm border border-gray-700">
+        <div id="log"
+            class="bg-gray-900 text-green-400 p-4 rounded h-64 overflow-y-auto font-mono text-sm border border-gray-700">
             <div>Logs will appear here...</div>
         </div>
 
@@ -42,10 +44,13 @@
                 color: #888;
                 transition: background 0.1s;
             }
-            .white-key:active, .white-key.active {
+
+            .white-key:active,
+            .white-key.active {
                 background: #eee;
                 border-bottom: 4px solid #ddd;
             }
+
             .black-key {
                 width: 24px;
                 height: 100px;
@@ -54,16 +59,21 @@
                 border-radius: 0 0 4px 4px;
                 position: absolute;
                 z-index: 2;
-                left: 28px; /* Standard offset */
+                left: 28px;
+                /* Standard offset */
                 cursor: pointer;
                 transition: background 0.1s;
             }
-            .black-key:active, .black-key.active {
+
+            .black-key:active,
+            .black-key.active {
                 background: #333;
             }
+
             .active {
                 background: #bbf !important;
             }
+
             .black-key.active {
                 background: #558 !important;
             }
@@ -87,7 +97,7 @@
                 // Render Piano
                 const pianoContainer = document.getElementById('piano-container');
                 pianoContainer.innerHTML = '';
-                
+
                 notes.forEach((n, i) => {
                     const isBlack = n.note.includes('#');
                     if (!isBlack) {
@@ -96,7 +106,7 @@
                         key.dataset.note = n.full;
                         key.innerHTML = `<span class="mt-auto mb-2 text-xs text-gray-400 select-none">${n.full}</span>`;
                         key.addEventListener('mousedown', () => playNote(n.full));
-                        
+
                         // Check if NEXT note is black (its sharp)
                         const nextIndex = i + 1;
                         if (nextIndex < notes.length) {
@@ -106,7 +116,7 @@
                                 bKey.className = 'black-key';
                                 bKey.dataset.note = nextN.full;
                                 bKey.addEventListener('mousedown', (e) => {
-                                    e.stopPropagation(); 
+                                    e.stopPropagation();
                                     playNote(nextN.full);
                                 });
                                 key.appendChild(bKey);
@@ -134,24 +144,24 @@
                         audioStatus.classList.remove('text-gray-500');
                         audioStatus.classList.add('text-green-500');
                     }
-                    
+
                     const now = Tone.now();
                     const playbackSynth = new Tone.Synth().toDestination();
                     playbackSynth.triggerAttackRelease(note, "8n", now);
-                    
+
                     log(`Playing ${note}`);
-                    
+
                     // Highlight logic
                     const wKey = document.querySelector(`.white-key[data-note="${note}"]`);
                     const bKey = document.querySelector(`.black-key[data-note="${note}"]`);
-                    
-                    if(wKey) {
-                         wKey.classList.add('active');
-                         setTimeout(() => wKey.classList.remove('active'), 200);
+
+                    if (wKey) {
+                        wKey.classList.add('active');
+                        setTimeout(() => wKey.classList.remove('active'), 200);
                     }
-                    if(bKey) {
-                         bKey.classList.add('active');
-                         setTimeout(() => bKey.classList.remove('active'), 200);
+                    if (bKey) {
+                        bKey.classList.add('active');
+                        setTimeout(() => bKey.classList.remove('active'), 200);
                     }
                 }
 
@@ -160,11 +170,18 @@
                     audioStatus.textContent = "Audio Context Started";
                     audioStatus.classList.remove('text-gray-500');
                     audioStatus.classList.add('text-green-500');
-                    generateBtn.disabled = false;
+                    // generateBtn.disabled = false; // logic removed as button is enabled by default
                     log("Audio Context started");
                 });
 
                 generateBtn.addEventListener('click', async () => {
+                    if (Tone.context.state !== 'running') {
+                        await Tone.start();
+                        audioStatus.textContent = "Audio Context Started (Auto)";
+                        audioStatus.classList.remove('text-gray-500');
+                        audioStatus.classList.add('text-green-500');
+                    }
+
                     generateBtn.disabled = true;
                     log("Starting generation sequence...");
 
@@ -172,13 +189,13 @@
                         // Highlight
                         const wKey = document.querySelector(`.white-key[data-note="${n.full}"]`);
                         const bKey = document.querySelector(`.black-key[data-note="${n.full}"]`);
-                        if(wKey) wKey.classList.add('active');
-                        if(bKey) bKey.classList.add('active');
+                        if (wKey) wKey.classList.add('active');
+                        if (bKey) bKey.classList.add('active');
 
                         await generateAndUploadNote(n.note, n.octave);
-                        
-                        if(wKey) setTimeout(() => wKey.classList.remove('active'), 100);
-                        if(bKey) setTimeout(() => bKey.classList.remove('active'), 100);
+
+                        if (wKey) setTimeout(() => wKey.classList.remove('active'), 100);
+                        if (bKey) setTimeout(() => bKey.classList.remove('active'), 100);
 
                         await new Promise(r => setTimeout(r, 100)); // Faster 100ms gap
                     }
