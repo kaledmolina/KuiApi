@@ -49,7 +49,11 @@ class LessonController extends Controller
         // I will implement a basic increment based on score or fixed values.
         // Assuming: XP = score, Gold = stars * 10
 
-        $xpGained = $request->score; // standard simple mapping
+        // Fetch Level to get difficulty
+        $level = Level::find($request->level_id);
+        $difficultyMultiplier = $level ? $level->difficulty : 1;
+
+        $xpGained = $request->score * $difficultyMultiplier; // XP = score * difficulty
         $goldGained = $request->stars * 10;
 
         $user->increment('xp_total', $xpGained);
