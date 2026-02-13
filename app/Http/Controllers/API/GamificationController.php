@@ -33,4 +33,12 @@ class GamificationController extends Controller
             ], 400); // Or 402 Payment Required? 400 is fine for now.
         }
     }
+
+    public function completePractice(Request $request)
+    {
+        $user = $request->user();
+        $result = $this->gamificationService->completePractice($user);
+
+        return response()->json($result);
+    }
 }

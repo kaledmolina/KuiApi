@@ -78,4 +78,54 @@ class GamificationService
         $user->last_activity_at = $now;
         $user->save();
     }
+
+    /**
+     * Handle practice completion.
+     * Award Life + XP if under daily limit (3).
+     * Award only XP if over limit.
+     */
+    public function completePractice(User $user): array
+    {
+        $now = now();
+        $lastFarmed = $user->last_farmed_at ? Carbon::parse($user->last_farmed_at) : null;
+
+        // Reset daily counter if new day
+        if (!$lastFarmed || !$lastFarmed->isSameDay($now)) {
+            $user->lives_farmed_daily = 0;
+        }
+
+        $gainedLife = false;
+        $xpGained = 0;
+        $message = '';
+
+        if ($user->lives_farmed_daily < 3) {
+            // Farm Life
+            if ($user->lives < 5) { // Assuming 5 is max lives
+                $user->increment('lives');
+                $gainedLife = true;
+            }
+            $user->increment('lives_farmed_daily');
+
+            // Award Practice XP (e.g. 10 XP)
+            $xpGained = 10;
+            $message = 'Practice Complete! +1 Heart, +10 XP';
+        } else {
+            // Daily limit reached, only XP (reduced?)
+            $xpGained = 5;
+            $message = 'Daily hearts limit reached. +5 XP';
+        }
+
+        $user->increment('xp_total', $xpGained);
+        $user->last_farmed_at = $now;
+        $user->last_activity_at = $now; // Also counts as activity
+        $user->save();
+
+        return [
+            'gained_life' => $gainedLife,
+            'xp_gained' => $xpGained,
+            'lives' => $user->lives,
+            'lives_farmed_today' => $user->lives_farmed_daily,
+            'message' => $message
+        ];
+    }
 }
