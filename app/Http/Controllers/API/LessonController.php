@@ -40,20 +40,23 @@ class LessonController extends Controller
             ->where('level_id', $request->level_id)
             ->first();
 
+        $maxStars = $progress ? max($progress->stars, $request->stars) : $request->stars;
+        $maxScore = $progress ? max($progress->score, $request->score) : $request->score;
+
         if ($progress) {
             // Keep the maximum stars and score
             $progress->update([
-                'stars' => max($progress->stars, $request->stars),
-                'score' => max($progress->score, $request->score),
-                'is_completed' => true,
+                'stars' => $maxStars,
+                'score' => $maxScore,
+                'is_completed' => $maxStars >= 3,
             ]);
         } else {
             $progress = UserProgress::create([
                 'user_id' => $user->id,
                 'level_id' => $request->level_id,
-                'stars' => $request->stars,
-                'score' => $request->score,
-                'is_completed' => true,
+                'stars' => $maxStars,
+                'score' => $maxScore,
+                'is_completed' => $maxStars >= 3,
             ]);
         }
 
