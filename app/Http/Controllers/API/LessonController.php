@@ -12,7 +12,8 @@ class LessonController extends Controller
     public function curriculum()
     {
         // Simple pagination or list of levels
-        return response()->json(Level::with(['userProgress' => function ($query) { $query->where('user_id', request()->user()->id); }])->orderBy('id')->get());
+        return response()->json(Level::with(['userProgress' => function ($query) {
+            $query->where('user_id', request()->user()->id); }])->orderBy('id')->get());
     }
 
     public function show($id)
@@ -32,17 +33,28 @@ class LessonController extends Controller
         $user = $request->user();
 
         // Update User Progress
-        $progress = UserProgress::updateOrCreate(
-            [
+        $progress = clone UserProgress::where('user_id', $user->id)
+            ->where('level_id', $request->level_id)
+            ->first();
+
+        if ($progress) {
+            // Keep the maximum stars and score
+            $progress->update([
+                'stars' => max($progress->stars, $request->stars),
+                'score' => max($progress->score, $request->score),
+                'completed_at' => now(),
+                'is_completed' => true,
+            ]);
+        } else {
+            $progress = UserProgress::create([
                 'user_id' => $user->id,
                 'level_id' => $request->level_id,
-            ],
-            [
-                'stars' => $request->stars, // Simple logic: overwrite stars. Real logic might check if new stars > old stars.
+                'stars' => $request->stars,
                 'score' => $request->score,
                 'completed_at' => now(),
-            ]
-        );
+                'is_completed' => true,
+            ]);
+        }
 
         // Update User Stats (XP, Gold, Streak) - Logic copied from request description "Igual que el plan anterior"
         // Since I don't have the exact logic for XP calculation from "Plan anterior" embodied here, 
