@@ -12,7 +12,7 @@ class LessonController extends Controller
     public function curriculum()
     {
         // Simple pagination or list of levels
-        return response()->json(Level::orderBy('id')->get());
+        return response()->json(Level::with(['userProgress' => function ($query) { $query->where('user_id', request()->user()->id); }])->orderBy('id')->get());
     }
 
     public function show($id)
