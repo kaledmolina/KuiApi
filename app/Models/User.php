@@ -63,6 +63,20 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
+    /**
+     * Passively drop the streak to 0 in the API response if the user missed yesterday entirely.
+     */
+    public function getStreakCountAttribute($value): int
+    {
+        $lastActivity = $this->last_activity_at;
+
+        if ($lastActivity && !$lastActivity->isToday() && !$lastActivity->isYesterday()) {
+            return 0;
+        }
+
+        return (int) $value;
+    }
+
     public function checkAndResetMonthlyLeague(): void
     {
         $now = now();

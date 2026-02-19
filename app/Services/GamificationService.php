@@ -22,24 +22,17 @@ class GamificationService
             $user->last_life_regenerated_at = $now;
         }
 
-        // 2. Streak Logic (Login based)
-        // Note: Some apps update streak only on lesson completion. 
-        // We kept the logic from AuthController here for consistency if "login" counts as activity.
-        if ($lastActivity) {
-            if ($lastActivity->isYesterday()) {
-                // Continued streak
-                $user->increment('streak_count');
-            } elseif (!$lastActivity->isToday()) {
-                // Broken streak (older than yesterday)
-                $user->streak_count = 1;
-            }
-            // If isToday, do nothing
-        } else {
-            // First time
-            $user->streak_count = 1;
+        // 2. Passive Streak Checking (Duolingo Style: Login does NOT increase streak)
+        if ($lastActivity && !$lastActivity->isToday() && !$lastActivity->isYesterday()) {
+            // Broken streak (older than yesterday) - They skipped an entire day
+            $user->streak_count = 0; // Visual drop to 0
         }
 
-        $user->last_activity_at = $now;
+        // Only update last activity if it's strictly older, or maybe don't update it to preserve the logic for tomorrow?
+        // Actually, merely opening the app shouldn't reset their 'last_activity' if they haven't DONE anything, 
+        // otherwise they might break tomorrow's streak logic. However, Duolingo usually considers app open as 'seen'. 
+        // Let's only update last activity when they COMPLETE a lesson, to avoid login bugs.
+        // Or if we must save Lives, we save User.
         $user->save();
     }
 
@@ -67,11 +60,15 @@ class GamificationService
 
         if ($lastActivity) {
             if ($lastActivity->isYesterday()) {
+                // Completed lesson yesterday and today -> streak continues
                 $user->increment('streak_count');
             } elseif (!$lastActivity->isToday()) {
+                // Completed lesson today, but didn't play yesterday -> streak resets to 1
                 $user->streak_count = 1;
             }
+            // If they already completed a lesson today, we do nothing (already earned today's streak)
         } else {
+            // First time ever completing a lesson
             $user->streak_count = 1;
         }
 
@@ -117,8 +114,7 @@ class GamificationService
 
         $user->increment('xp_total', $xpGained);
         $user->last_farmed_at = $now;
-        $user->last_activity_at = $now; // Also counts as activity
-        $user->save();
+        $this->maintainStreak($user); // Handles saving and streak updates
 
         return [
             'gained_life' => $gainedLife,
