@@ -47,12 +47,9 @@ class ProgressController extends Controller
         $user->last_activity_at = $now;
 
         if ($request->has('xp')) {
-            // XP usually accumulates, but if we pass total, update total
-            // Or if we pass increment, logic should handle it. 
-            // For simplicity, let's assume we pass the *new total* or *increment*?
-            // User model has 'xp_total'. Let's assume we pass the delta to add.
-            // Wait, front-end might send total. Let's assume 'xp' param is added to total.
+            $user->checkAndResetMonthlyLeague();
             $user->xp_total += $request->xp;
+            $user->xp_monthly += $request->xp;
 
             // League Calculation Logic
             $xp = $user->xp_total;

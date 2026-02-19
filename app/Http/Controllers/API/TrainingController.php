@@ -21,7 +21,10 @@ class TrainingController extends Controller
         // --- 1. XP REWARDS (Unlimited) ---
         // 10 XP per point
         $earnedXp = $score * 10;
+
+        $user->checkAndResetMonthlyLeague();
         $user->xp_total += $earnedXp;
+        $user->xp_monthly += $earnedXp;
 
         // --- 2. LIVES REWARDS (Capped daily) ---
         $earnedLives = 0;
@@ -60,22 +63,10 @@ class TrainingController extends Controller
             // Cap total lives at 5 (game rule)
             $newLives = min(5, $currentLives + $livesToGrant);
 
-            // Only increment farmed count if we actually added lives (or should we count attempts? let's count granted)
-            // Actually, if user is already at 5 lives, they don't "gain" a life in inventory, but did they "farm" it?
-            // Let's say yes, they consumed their daily chance. 
-            // Better UX: If they are full, tell them they are full. 
-            // But for simplicity: Just add what we can.
-
             $livesAdded = $newLives - $currentLives;
-
-            // Wait, if I have 5 lives, I shouldn't be farming training for lives, just XP.
-            // Let's just track granted lives.
 
             $user->lives = $newLives;
             $user->lives_farmed_daily += $livesToGrant;
-            // Note: If I had 4 lives, and earned 2. I go to 5. livesAdded=1. 
-            // Should I count 2 against daily limit? Yes. The effort was for 2.
-            // Simplified: User gets credit for what the server decides to give.
 
             $earnedLives = $livesToGrant; // This is what we tell the user they "won"
         }
@@ -92,6 +83,7 @@ class TrainingController extends Controller
             'user_stats' => [ // Return full updated stats for smart sync
                 'lives' => $user->lives,
                 'xp_total' => $user->xp_total,
+                'xp_monthly' => $user->xp_monthly,
                 'streak_count' => $user->streak_count,
             ]
         ]);

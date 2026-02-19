@@ -13,9 +13,13 @@ class RankingController extends Controller
         try {
             $league = $request->query('league');
 
-            $query = User::select('id', 'name', 'xp_total', 'league', 'max_unlocked_level')
+            // Optionally, trigger a check for the authenticated user, but we'll do that in XP awards mostly.
+            // If we want the ranking to always be perfectly fresh, we might need a batch update or trust the login/XP hook.
+            // For now, let's just query.
+
+            $query = User::select('id', 'name', 'xp_total', 'xp_monthly', 'league', 'max_unlocked_level')
                 ->where('is_active', true)
-                ->orderBy('xp_total', 'desc');
+                ->orderBy('xp_monthly', 'desc');
 
             if ($league) {
                 $query->where('league', $league);

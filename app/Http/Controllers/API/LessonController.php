@@ -72,7 +72,9 @@ class LessonController extends Controller
         $xpGained = $request->score * $difficultyMultiplier; // XP = score * difficulty
         $goldGained = $request->stars * 10;
 
+        $user->checkAndResetMonthlyLeague();
         $user->increment('xp_total', $xpGained);
+        $user->increment('xp_monthly', $xpGained);
         $user->increment('gold_notes', $goldGained);
 
         // 4. Streak Update via Gamification Service
@@ -85,6 +87,7 @@ class LessonController extends Controller
             'gold_gained' => $goldGained,
             'user_stats' => [
                 'xp_total' => $user->xp_total,
+                'xp_monthly' => $user->xp_monthly,
                 'gold_notes' => $user->gold_notes,
             ]
         ]);
