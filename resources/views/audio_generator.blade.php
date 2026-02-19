@@ -83,10 +83,44 @@
 
             const dest = Tone.context.createMediaStreamDestination();
             const recorder = new MediaRecorder(dest.stream);
-            const synth = new Tone.Synth().connect(dest);
 
-            // Also connect to master to hear it (optional, maybe mute for bulk?)
-            // synth.toDestination(); 
+            // 1. Soft Piano / Rhodes Electric Piano Synth Parameters
+            const synth = new Tone.FMSynth({
+                harmonicity: 1, // Ratio of modulator to carrier
+                modulationIndex: 1.5,
+                oscillator: {
+                    type: "sine" // Pure base tone
+                },
+                envelope: {
+                    attack: 0.01, // Fast strike
+                    decay: 0.2,   // Initial drop
+                    sustain: 0.2, // Level while held
+                    release: 2.0  // Long, soft fade out
+                },
+                modulation: {
+                    type: "square" // Adds some overtone texture
+                },
+                modulationEnvelope: {
+                    attack: 0.01,
+                    decay: 0.1,
+                    sustain: 0,
+                    release: 0
+                }
+            });
+
+            // 2. Lowpass Filter to cut harsh high frequencies
+            const filter = new Tone.Filter({
+                type: "lowpass",
+                frequency: 1200, // Very soft cutoff
+                rolloff: -24
+            });
+
+            // Reverb can also help soften it, but let's stick to the Filter for pure notes first.
+            synth.connect(filter);
+            filter.connect(dest);
+
+            // Connect to master to hear it locally
+            // filter.toDestination(); 
 
             return new Promise((resolve) => {
                 const chunks = [];
@@ -98,15 +132,13 @@
                 };
 
                 recorder.start();
-                const now = Tone.now();
-                // Play for 1 second (whole note at 60bpm roughly, or just explicit time)
-                // 8n = eighth note. Let's do a quarter note "4n" or just 0.5 seconds
+                // Play note softly with a bit of velocity if available, otherwise default
                 synth.triggerAttackRelease(fullName, "2n");
 
-                // Stop recording after the note + release tail
+                // Stop recording after the note + long release tail
                 setTimeout(() => {
                     recorder.stop();
-                }, 1500); // 1.5s should cover attack + release
+                }, 2500); // 2.5s covers the 2.0s release tail beautifully
             });
         }
 
