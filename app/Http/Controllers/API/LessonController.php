@@ -45,7 +45,6 @@ class LessonController extends Controller
             $progress->update([
                 'stars' => max($progress->stars, $request->stars),
                 'score' => max($progress->score, $request->score),
-                'completed_at' => now(),
                 'is_completed' => true,
             ]);
         } else {
@@ -54,7 +53,6 @@ class LessonController extends Controller
                 'level_id' => $request->level_id,
                 'stars' => $request->stars,
                 'score' => $request->score,
-                'completed_at' => now(),
                 'is_completed' => true,
             ]);
         }

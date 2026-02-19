@@ -42,7 +42,6 @@ class UserProgressResource extends Resource
                     ->default(0),
                 Forms\Components\Toggle::make('is_completed')
                     ->required(),
-                Forms\Components\DateTimePicker::make('completed_at'),
             ]);
     }
 
@@ -69,15 +68,13 @@ class UserProgressResource extends Resource
                 Tables\Columns\IconColumn::make('is_completed')
                     ->label('Completado')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('completed_at')
-                    ->label('Fecha')
-                    ->dateTime()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Fecha Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Fecha Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
