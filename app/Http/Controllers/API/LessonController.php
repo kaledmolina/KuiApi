@@ -12,8 +12,11 @@ class LessonController extends Controller
     public function curriculum()
     {
         // Simple pagination or list of levels
-        return response()->json(Level::with(['userProgress' => function ($query) {
-            $query->where('user_id', request()->user()->id); }])->orderBy('id')->get());
+        return response()->json(Level::with([
+            'userProgress' => function ($query) {
+                $query->where('user_id', request()->user()->id);
+            }
+        ])->orderBy('id')->get());
     }
 
     public function show($id)
@@ -33,7 +36,7 @@ class LessonController extends Controller
         $user = $request->user();
 
         // Update User Progress
-        $progress = clone UserProgress::where('user_id', $user->id)
+        $progress = UserProgress::where('user_id', $user->id)
             ->where('level_id', $request->level_id)
             ->first();
 
