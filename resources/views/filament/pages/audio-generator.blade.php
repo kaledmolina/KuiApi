@@ -137,6 +137,27 @@
                     logDiv.prepend(div);
                 }
 
+                function createSoftPianoSynth(destination) {
+                    const synth = new Tone.FMSynth({
+                        harmonicity: 1,
+                        modulationIndex: 1.5,
+                        oscillator: { type: "sine" },
+                        envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 2.0 },
+                        modulation: { type: "square" },
+                        modulationEnvelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0 }
+                    });
+
+                    const filter = new Tone.Filter({
+                        type: "lowpass",
+                        frequency: 1200,
+                        rolloff: -24
+                    });
+
+                    synth.connect(filter);
+                    filter.connect(destination);
+                    return synth;
+                }
+
                 async function playNote(note) {
                     if (Tone.context.state !== 'running') {
                         await Tone.start();
@@ -146,8 +167,8 @@
                     }
 
                     const now = Tone.now();
-                    const playbackSynth = new Tone.Synth().toDestination();
-                    playbackSynth.triggerAttackRelease(note, "8n", now);
+                    const playbackSynth = createSoftPianoSynth(Tone.Destination);
+                    playbackSynth.triggerAttackRelease(note, "2n", now);
 
                     log(`Playing ${note}`);
 
@@ -210,7 +231,7 @@
 
                     const dest = Tone.context.createMediaStreamDestination();
                     const recorder = new MediaRecorder(dest.stream);
-                    const synth = new Tone.Synth().connect(dest);
+                    const synth = createSoftPianoSynth(dest);
 
                     return new Promise((resolve) => {
                         const chunks = [];
@@ -229,7 +250,7 @@
 
                         setTimeout(() => {
                             recorder.stop();
-                        }, 1000); // 1s
+                        }, 2500); // 2.5s to capture the soft decay fully
                     });
                 }
 
