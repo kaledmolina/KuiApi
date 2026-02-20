@@ -8,7 +8,13 @@
         </div>
 
         <div class="mb-6">
-            <h2 class="text-xl font-bold mb-2">Generate Notes (A0 - C8)</h2>
+            <h2 class="text-xl font-bold mb-2">Instrument Simulator</h2>
+            <select id="synth-type" class="border border-gray-300 rounded p-2 mb-4 w-64 block text-black">
+                <option value="soft-piano">Piano Eléctrico Suave</option>
+                <option value="grand-piano">Piano Acústico (Básico)</option>
+                <option value="classic-8-bit">Clásico 8-bit Retro</option>
+                <option value="warm-synth">Sintetizador Cálido (Pad)</option>
+            </select>
             <x-filament::button id="generate-all" type="button" color="success">Generate & Upload All (88
                 Keys)</x-filament::button>
         </div>
@@ -137,24 +143,47 @@
                     logDiv.prepend(div);
                 }
 
-                function createSoftPianoSynth(destination) {
-                    const synth = new Tone.FMSynth({
-                        harmonicity: 1,
-                        modulationIndex: 1.5,
-                        oscillator: { type: "sine" },
-                        envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 2.0 },
-                        modulation: { type: "square" },
-                        modulationEnvelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0 }
-                    });
+                function createSynth(destination) {
+                    const type = document.getElementById('synth-type').value;
+                    let synth, filter;
 
-                    const filter = new Tone.Filter({
-                        type: "lowpass",
-                        frequency: 1200,
-                        rolloff: -24
-                    });
-
-                    synth.connect(filter);
-                    filter.connect(destination);
+                    if (type === 'classic-8-bit') {
+                        synth = new Tone.Synth({
+                            oscillator: { type: "square" },
+                            envelope: { attack: 0.05, decay: 0.1, sustain: 0.1, release: 0.5 }
+                        });
+                        synth.connect(destination);
+                    } else if (type === 'warm-synth') {
+                        synth = new Tone.AMSynth({
+                            harmonicity: 1,
+                            oscillator: { type: "sine" },
+                            envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 3.0 },
+                            modulation: { type: "triangle" },
+                            modulationEnvelope: { attack: 0.5, decay: 0.5, sustain: 0.5, release: 3.0 }
+                        });
+                        filter = new Tone.Filter({ type: "lowpass", frequency: 800, rolloff: -24 });
+                        synth.connect(filter);
+                        filter.connect(destination);
+                    } else if (type === 'grand-piano') {
+                        synth = new Tone.Synth({
+                            oscillator: { type: "triangle" },
+                            envelope: { attack: 0.005, decay: 0.5, sustain: 0.3, release: 1.5 }
+                        });
+                        synth.connect(destination);
+                    } else {
+                        // Default: 'soft-piano'
+                        synth = new Tone.FMSynth({
+                            harmonicity: 1,
+                            modulationIndex: 1.5,
+                            oscillator: { type: "sine" },
+                            envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 2.0 },
+                            modulation: { type: "square" },
+                            modulationEnvelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0 }
+                        });
+                        filter = new Tone.Filter({ type: "lowpass", frequency: 1200, rolloff: -24 });
+                        synth.connect(filter);
+                        filter.connect(destination);
+                    }
                     return synth;
                 }
 
@@ -167,7 +196,7 @@
                     }
 
                     const now = Tone.now();
-                    const playbackSynth = createSoftPianoSynth(Tone.Destination);
+                    const playbackSynth = createSynth(Tone.Destination);
                     playbackSynth.triggerAttackRelease(note, "2n", now);
 
                     log(`Playing ${note}`);
@@ -231,7 +260,7 @@
 
                     const dest = Tone.context.createMediaStreamDestination();
                     const recorder = new MediaRecorder(dest.stream);
-                    const synth = createSoftPianoSynth(dest);
+                    const synth = createSynth(dest);
 
                     return new Promise((resolve) => {
                         const chunks = [];
